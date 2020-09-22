@@ -1,0 +1,907 @@
+    зарегистрировать пользователя post(email,tel,password,lastname,firstname,id_city,user_type)
+    http://np.im56.ru/rest/create-user
+
+    после создания пользователя запустить создание баланса
+    http://np.im56.ru/rest/create-balance
+
+    войти post(tel,password)
+    http://np.im56.ru/rest/login
+
+    стоимость заказа post(id_request)
+    http://np.im56.ru/rest/get-request-price-by-id
+
+    стоимость аванса post(id_request)
+    http://np.im56.ru/rest/get-request-prepayment-by-id
+
+    данные по замеру post(id_request, id_workers)
+    http://np.im56.ru/rest/get-data-metering-by-id
+
+    добавить новый замер post(date_metering_plan,date_metering_plan,address_client_house,address_client_room)
+    http://np.im56.ru/rest/add-request-new-metering
+
+    получение подтверждания по id post(id)
+    http://np.im56.ru/rest/get-verify-by-id
+
+    получение подтвержданий по id post(id_request)
+    http://np.im56.ru/rest/get-verify-by-id-request
+
+    получение подтвержданий назначенных пользователю post(id_user)
+    http://np.im56.ru/rest/get-verify-by-id-to
+
+    установка  подтверждания yes по id post(id_request,id_to_user, id_from_user)
+    http://np.im56.ru/rest/set-verify-yes
+
+    отмена подтверждания no по id post(id_request,id_to_user, id_from_user)
+    http://np.im56.ru/rest/set-verify-no
+
+    изменить все данные по пользователю по id пользователя post(id,email,lastname,firstname,birthday,tel,password, ,sys_notice, news_notice)
+    http://np.im56.ru/rest/set-user
+
+    изменить реквезиты пользователя post($company,$inn,$kpp,$bank_name,$bank_bik,$account_calc,$account_cor,$address_company,$director)
+    http://np.im56.ru/rest/set-requisites
+
+    все параметры филиала-города post(id_city)
+    http://np.im56.ru/rest/get-city-by-id
+
+    старое
+
+    все замеры и заказы для клиента  по статусу post(status_request)
+    http://np.im56.ru/rest/get-request-by-client-and-status
+
+    все заказы на замер для замерщика по статусу post(status_request)
+    http://np.im56.ru/rest/get-request-by-worker-and-status-metering
+
+    все заказы на доставку для курьера по статусу post(status_request)
+    http://np.im56.ru/rest/get-request-by-worker-and-status-delivery
+
+    все заказы на изготовление для производителя по статусу post(status_request)
+    http://np.im56.ru/rest/get-request-by-worker-and-status-company
+
+    все заказы на монтаж для монтажника по статусу post(status_request)
+    http://np.im56.ru/rest/get-request-by-worker-and-status-mounting
+
+    все заказы по статусу post(status_request)
+    http://np.im56.ru/rest/get-request-by-status
+
+    заказ по ИД get(id_request)
+    http://np.im56.ru/rest/get-request-by-id?id_request=2
+
+    установить замерщика для заказа по ид, post(id_request,date_metering,id_worker) вернет true если записал
+    http://np.im56.ru/rest/set-insert-metering
+
+    установить изготовителя для заказа по ид, post(id_request,price,id_worker) вернет true если записал
+    http://np.im56.ru/rest/set-insert-company
+
+    установить доставщика для заказа по ид, post(id_request,id_worker) вернет true если записал
+    http://np.im56.ru/rest/set-insert-delivery
+
+    установить монтажника для заказа по ид, post(id_request,price,date_mounting,id_worker) вернет true если записал
+    http://np.im56.ru/rest/set-insert-mounting
+
+    установить статус для заказа по ид, post(id_request, status_old,status_new) вернет true если записал
+    http://np.im56.ru/rest/set-status
+
+    проверка отклика  Chek-response post(id_request,type_workers) вернет $response если нашел
+    http://np.im56.ru/rest/chek-response
+
+    все отклики для заказа по ид, post(id_request,type_workers) вернет $response если нашел
+    http://np.im56.ru/rest/get-response-by-request
+
+    список откликнувшихся для заказа по ид, post(id_request,type_workers) вернет $response если нашел
+    http://np.im56.ru/rest/get-workers-by-request
+
+    создание отклика, post(id_request,type_workers,date_workers,price) вернет $response если нашел
+    http://np.im56.ru/rest/create-response
+
+Статусы пользователей:
+   const STATUS_DELETED = -1;
+    const STATUS_REGISTERED = 0;
+    const STATUS_ACTIVE = 1;
+    const STATUS_ALLOWED = 2;
+Роли пользователе
+    const TYPE_CLIENT = 1; // client - клиент
+    const TYPE_METERING = 2; //metering - замерщик
+    const TYPE_DELIVERY = 3; //delivery - доставщик
+    const TYPE_MOUNTING = 4; //mounting - монтажник
+    const TYPE_COMPANY = 5; //company - изготовитель
+Статусы заказа
+    const STATUS_DELETED = -1; //удален или отменен
+    const STATUS_CREATE = 0; //только создан
+    const STATUS_METERING_BEFORE = 1; //на стадии выбора замерщика
+    const STATUS_METERING_RUN = 2; //внесение замера
+    const STATUS_METERING_AFTER = 3; //выбираются изготовитель, курьер и монтажник
+    const STATUS_COMPANY_BEFORE = 4; //ожидается оплата
+    const STATUS_COMPANY_RUN = 5; //изготавливается потолок
+    const STATUS_COMPANY_AFTER = 6; //о передаче курьеру
+    const STATUS_DELIVERY_BEFORE = 7; // курьер забрал
+    const STATUS_DELIVERY_RUN = 8; //курьер доставил
+    const STATUS_DELIVERY_AFTER = 9;//подтверждение доставки
+    const STATUS_MOUNTING_BEFORE = 10; //монтажник ожидает
+    const STATUS_MOUNTING_RUN = 11; // монтажник подтвердил выполнение
+    const STATUS_MOUNTING_AFTER = 12; //клиент подтвердил монтаж
+    const STATUS_FINISH = 15; //отзывы
+Атрибуты заказа
+            'id_client' => 'ID Клиента',
+            'date_create' => 'Дата создания',
+            'id_city' => 'Город',
+            'address' => 'Адрес',
+            'address_client_street' => 'Улица',
+            'address_client_house' => 'Дом',
+            'address_client_room' => 'Квартира',
+            'comment_request' => 'Комментарий',
+            'id_metering' => 'Замерщик',
+            'date_metering_plan' => 'Дата замера',
+            'time_from_metering_plan' => 'Время замера от',
+            'time_to_metering_plan' => 'Время замера до',
+            'date_metering' => 'Дата замера',
+            'id_delivery' => 'Доставщик',
+            'price_delivery' => 'Стоимость доставки',
+            'id_mounting' => 'Монтажник',
+            'date_mounting' => 'Дата монтажа',
+            'price_mounting' => 'Стоимость монтажа',
+            'type_price' => 'Тип цены',
+            'id_company' => 'Изготовитель',
+            'price_company' => 'Стоимость изготовления',
+            'price_request' => 'Стоимость заказа',
+            'deposit_transfer' => 'Deposit Transfer',
+            'deposit_cash' => 'Deposit Cash',
+            'type_deposit' => 'Тип оплаты',
+            'status_price' => 'Статус оплаты',
+            'status_request' => 'Статус заказа'
+примеры:
+Клиент:
+шаг 1
+    мои замеры: http://np.im56.ru/rest/get-request-by-client-and-status
+        status_request = [STATUS_METERING_BEFORE, STATUS_METERING_RUN, STATUS_METERING_AFTER]
+
+    мои заказы: http://np.im56.ru/rest/get-request-by-client-and-status
+        status_request = [STATUS_COMPANY_BEFORE, STATUS_COMPANY_RUN, STATUS_COMPANY_AFTER,
+            STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER,
+            STATUS_MOUNTING_BEFORE, STATUS_MOUNTING_RUN, STATUS_MOUNTING_AFTER,
+            STATUS_FINISH
+        ]
+
+шаг 2
+    Город пользователя:
+        http://np.im56.ru/rest/get-city-name
+
+    добавить новый замер
+        http://np.im56.ru/rest/add-request-new-metering
+            вводные данные: date_metering_plan,address_client_street,address_client_house,address_client_room
+
+    если замерщик назначен то перенаправить на экран 6 иначе для выбора на 4 шаг
+        http://np.im56.ru/rest/get-request-by-id?id_request=2
+            id_metering <> null
+шаг 4
+    Все откликнувшиеся на замер:
+        http://np.im56.ru/rest/get-workers-by-request
+            id_request
+            type_workers = TYPE_METERING
+
+    установить замерщика для заказа по ид: http://np.im56.ru/rest/set-insert-metering
+        id_request
+        date_metering
+        id_worker
+
+    и установить статус: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_METERING_BEFORE
+        status_new = STATUS_METERING_RUN
+
+шаг 6
+    мои замеры: http://np.im56.ru/rest/get-request-by-client-and-status
+            status_request = [STATUS_METERING_BEFORE, STATUS_METERING_RUN, STATUS_METERING_AFTER]
+
+    мои заказы: http://np.im56.ru/rest/get-request-by-client-and-status
+        status_request = [STATUS_COMPANY_BEFORE, STATUS_COMPANY_RUN, STATUS_COMPANY_AFTER,
+                STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER,
+                STATUS_MOUNTING_BEFORE, STATUS_MOUNTING_RUN, STATUS_MOUNTING_AFTER,
+                STATUS_FINISH]
+
+    получить процент выолнения по ИД: http://np.im56.ru/rest/get-request-status-percent
+        id_request
+
+
+    получить процент выолнения по ИД: http://np.im56.ru/rest/get-request-status-percent
+        id_request
+
+шаг 7
+    данные по замеру: http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+        id_request
+
+    кол-во откликнувшиеся на замер:
+            count(http://np.im56.ru/rest/get-workers-by-request)
+                id_request
+                type_workers = TYPE_METERING
+
+    данные о замерщике:
+        http://np.im56.ru/rest/get-user-id
+            id_metering из данные по замеру
+
+    ? убрать потом когда сменят дизайн
+    данные по замеру post(id_request, id_workers)
+        http://np.im56.ru/rest/get-data-metering-by-id
+            id_request
+            id_workers это id_metering из данные по замеру
+
+    Статус по заказу:
+        status_request из данные по замеру
+
+шаг 8
+    установить замерщика для заказа по ид: http://np.im56.ru/rest/set-insert-metering
+        id_request
+        date_metering
+        id_worker
+
+    и установить статус: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_METERING_RUN
+        status_new = STATUS_METERING_BEFORE
+
+    если отменить заказ, установить статус: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = status_request из данные по замеру
+        status_new = STATUS_DELETED
+
+    и установить статус: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_METERING_BEFORE
+        status_new = STATUS_METERING_RUN
+
+    смена даты замера
+        отменить замерщика для заказа по ид:
+        http://np.im56.ru/rest/set-insert-metering
+            id_request
+            date_metering = null
+            id_worker = null
+    и установить статус: http://np.im56.ru/rest/set-status
+                id_request
+                status_old = STATUS_METERING_RUN
+                status_new = STATUS_METERING_BEFORE
+
+    подвердить замер: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_METERING_RUN
+        status_new = STATUS_METERING_AFTER
+
+    установка подтверждания: http://np.im56.ru/rest/set-verify-yes
+        id_request
+        id_user_to
+        id_from_user
+
+шаг 11
+    мои заказы: http://np.im56.ru/rest/get-request-by-client-and-status
+        status_request = [STATUS_COMPANY_BEFORE, STATUS_COMPANY_RUN, STATUS_COMPANY_AFTER,
+                STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER,
+                STATUS_MOUNTING_BEFORE, STATUS_MOUNTING_RUN, STATUS_MOUNTING_AFTER,
+                STATUS_FINISH]
+
+    получить процент выолнения по ИД: http://np.im56.ru/rest/get-request-status-percent
+        id_request
+
+
+шаг 12
+    данные по заказу: http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+        id_request
+
+    ? убрать после смены дизайна
+    данные по замеру: http://np.im56.ru/rest/get-data-metering-by-id
+        id_request
+        id_workers это id_metering из данные по замеру
+
+    кол-во откликнувшиеся на монтаж: count(http://np.im56.ru/rest/get-workers-by-request)
+        id_request
+        type_workers = TYPE_MOUNTING
+
+    все откликнувшиеся на монтаж:
+        http://np.im56.ru/rest/get-workers-by-request
+            id_request
+            type_workers = TYPE_MOUNTING
+
+    монтажник с минимальной ценой
+        http://np.im56.ru/rest/get-workers-by-request-min
+            id_request
+            type_workers = TYPE_MOUNTING
+
+    данные о монтажнике: http://np.im56.ru/rest/get-user-id
+        id_workers = user.id из монтажник с минимальной ценой
+
+    стоимость заказа: http://np.im56.rurest/get-request-price-by-id/
+        id_request
+
+    стоимость аванса: http://np.im56.ru/rest/get-request-prepayment-by-id
+        id_request
+
+    Статус по заказу:
+        status_request из данные по замеру
+
+    установить монтажника для заказа по ид: http://np.im56.ru/rest/set-insert-mounting
+        id_request
+        id_worker
+        price
+        date_mounting
+
+    производитель с минимальной ценой
+        http://np.im56.ru/rest/get-workers-by-request-min
+            id_request
+            type_workers = TYPE_COMPANY
+
+    установить производителя для заказа по ид: http://np.im56.ru/rest/set-insert-company
+        id_request
+        id_worker = user.id из производитель с минимальной ценой
+        price
+
+   Проверка для оформление заказа: http://np.im56.ru/rest/check-request-run()
+        id_request
+
+   Проверка для оформление заказа: http://np.im56.ru/rest/request-run()
+        id_request
+
+
+    переход след стадию если оплачен и назначены все
+
+шаг 15
+    данные по заказу: http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+        id_request
+
+    данные по замеру: http://np.im56.ru/rest/get-data-metering-by-id
+        id_request
+        id_workers это id_metering из данные по замеру
+
+    данные о монтажнике: http://np.im56.ru/rest/get-user-id
+        id_mounting из данные по замеру
+
+    Статус по заказу:
+        status_request из данные по замеру
+
+    стоимость заказа: http://np.im56.ru/rest/get-request-price-by-id
+        id_request
+
+    стоимость аванса: http://np.im56.ru/rest/get-request-prepayment-by-id
+        id_request
+
+	данные по заказу: http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+            id_request
+	            deposit_transfer
+                deposit_cash
+
+Шаг 16
+    подвердить доставку: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_DELIVERY_AFTER
+        status_new = STATUS_MOUNTING_BEFORE
+
+    установка подтверждания: http://np.im56.ru/rest/set-verify-yes
+        id_request
+        id_user_to
+        id_from_user
+
+    внесение наличных: доделаю после интеграции с qiwi
+
+Шаг 17
+    получить все уведомления для пользователю:
+        http://np.im56.ru/rest/get-message-for-user
+
+    получить все уведомления для пользователю:
+        http://np.im56.ru/rest/create-message
+            text
+            id_to_user = кому
+
+    поставить уведомлению статус прочитано:
+        http://np.im56.ru/rest/set-message-read
+            id_message
+
+Шаг 18
+    получить все данные по пользователю: http://np.im56.ru/rest/get-user-by-id?id=id
+        текущий пользователь id = http://np.im56.ru/rest/get-user-id
+
+    изменить все данные по пользователю http://np.im56.ru/rest/set-user
+        post(id,email,lastname,firstname,birthday,tel,password,sys_notice, news_notice)
+
+Шаг 19
+    получить все реквезиты по пользователю: http://np.im56.ru/rest/get-requisites-by-user-id
+        текущий пользователь id = http://np.im56.ru/rest/get-user-id
+
+    получить компанию по инн
+        http://np.im56.ru/rest/get-company-dadata?inn=[inn]
+            get(inn)
+
+    получить компанию по kpp
+        http://np.im56.ru/rest/get-bank-dadata?bic=044525225
+            get(bic)
+
+    изменить или добавить реквезиты пользователя http://np.im56.ru/rest/set-requisites
+        post(company,inn,kpp,bank_name,bank_bik,account_calc,account_cor,address_company,director)
+
+Шаг 20 21
+    ? статус пользователя активен ли, реквезиты
+    внесение наличных и историю: доделаю после интеграции с qiwi
+
+Шаг 22
+
+    ? сделать тип и вывод заголовка
+    подтверждение: http://np.im56.ru/rest/get-verify-by-id-to
+        id_user
+
+    установка подтверждания: http://np.im56.ru/rest/set-verify-yes
+        id_request
+        id_user_to
+        id_from_user
+
+Кабинет замерщика:
+Шаг 1:
+    новые заказы на замер для замерщика по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-status
+            status_request=STATUS_METERING_BEFORE
+
+    заказы для отклика замерщиком:
+        http://np.im56.ru/rest/get-request-for-worker-metering
+
+    заказы для отклика доставщиком:
+            http://np.im56.ru/rest/get-request-for-worker-delivery
+
+    создание отклика
+        http://np.im56.ru/rest/create-response
+            id_request
+            type_workers = TYPE_MOUNTING
+            date_workers = null
+            price = цена
+
+    мои заказы на замер для замерщика по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-worker-and-status-metering
+            status_request=STATUS_METERING_BEFORE, STATUS_METERING_RUN, STATUS_METERING_AFTER
+
+    все отклики для замера, post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/response-all-by-status-and-worker
+            type_workers=TYPE_METERING
+            status=null,0,1
+
+    все отклики для доставки, post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/response-all-by-status-and-worker
+            type_workers=TYPE_DELIVERY
+            status=null,0,1
+
+Шаг 2:
+    мои заказы на замер для замерщика по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-worker-and-status-metering
+            status_request=STATUS_METERING_BEFORE, STATUS_METERING_RUN, STATUS_METERING_AFTER
+
+    стоимость замера: post(id_city)
+        http://np.im56.ru/rest/get-city-by-id
+            id_city = $request['id_city'] , взять 'price_metering'
+
+    создание отклика
+        http://np.im56.ru/rest/create-response
+            id_request
+            type_workers = TYPE_MOUNTING
+            date_workers = null
+            price = цена
+
+Шаг 4:
+    мои заказы на доставку для замерщика по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-worker-and-status-delivery
+            status_request=STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER
+
+    стоимость доставки: $request['price_delivery']
+
+Шаг 5:
+    данные по заказу: http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+            id_request
+
+    мои заказы на доставку для замерщика по статусу post(status_request)
+            http://np.im56.ru/rest/get-request-by-worker-and-status-delivery
+                status_request=STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER
+
+Шаг ?
+    данные по замеру:
+        http://np.im56.ru/rest/get-data-metering-by-id
+            id_request
+            id_workers =  данные по заказу . id_metering
+
+    схемы в:
+        http://np.im56.ru/rest/get-shema-request
+            id_request=id_request
+            изображения в http://np.im56.ru/web/uploads/images/metering/id_request/
+
+    добавить данные по замеру:
+        http://np.im56.ru/rest/create-data-metering
+            id_request
+            id_workers =  данные по заказу . id_metering
+            'count_ceiling' => 'Кол-во потолков',
+            'area' => 'Общая площадь(м2)',
+            'perimeter' => 'Периметр(м)',
+            'spot' => 'Светильников',
+            'luster' => 'Люстр',
+            'curtain' => 'Гардин',
+            'cut_pipe' => 'Обвод труб'
+
+    изменить данные по замеру:
+        http://np.im56.ru/rest/create-data-metering
+            id_request
+            id_workers =  данные по заказу . id_metering
+            'count_ceiling' => 'Кол-во потолков',
+            'area' => 'Общая площадь(м2)',
+            'perimeter' => 'Периметр(м)',
+            'spot' => 'Светильников',
+            'luster' => 'Люстр',
+            'curtain' => 'Гардин',
+            'cut_pipe' => 'Обвод труб'
+
+    и установить статус: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_METERING_RUN
+        status_new = STATUS_METERING_AFTER
+
+
+
+
+Кабинет исполнителя:
+Шаг 1:
+
+    активность post(type_workers)
+        http://np.im56.ru/rest/get-activeness
+            type_workers=4
+
+    конверсия post(type_workers)
+        http://np.im56.ru/rest/get-conversion
+            type_workers=4
+
+    новые заказы на монтаж по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-status
+            status_request=STATUS_METERING_AFTER
+
+    новые заказы на замер по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-status
+            status_request=STATUS_METERING_BEFORE
+
+    заказы для отклика замерщиком:
+        http://np.im56.ru/rest/get-request-for-worker-metering
+
+    заказы для отклика монтажником:
+        http://np.im56.ru/rest/get-request-for-worker-mounting
+
+
+    мои заказы на замер для замера по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-worker-and-status-metering
+            status_request=STATUS_METERING_BEFORE, STATUS_METERING_RUN, STATUS_METERING_AFTER
+
+    мои заказы на монтаж по статусу post(status_request)
+            http://np.im56.ru/rest/get-request-by-worker-and-status-mounting
+                status_request=[STATUS_METERING_AFTER,
+                STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER,
+                STATUS_COMPANY_BEFORE, STATUS_COMPANY_RUN, STATUS_COMPANY_AFTER,
+                STATUS_MOUNTING_BEFORE, STATUS_MOUNTING_RUN, STATUS_MOUNTING_AFTER]
+
+    Заказы под ключ на выполнение
+        http://np.im56.ru/rest/get-request-by-status-type
+            status_request=[STATUS_METERING_AFTER,
+                            STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER,
+                            STATUS_COMPANY_BEFORE, STATUS_COMPANY_RUN, STATUS_COMPANY_AFTER,
+                            STATUS_MOUNTING_BEFORE, STATUS_MOUNTING_RUN, STATUS_MOUNTING_AFTER]
+            type = TYPE_TURN_KEY
+
+    Заказы под ключ завершенные
+        http://np.im56.ru/rest/get-request-by-status-type
+            status_request=[STATUS_FINISH]
+            type = TYPE_TURN_KEY
+
+    все отклики для замера, post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/response-all-by-status-and-worker
+            type_workers=TYPE_METERING
+            status=[0,1]
+
+    все отклики для замера, post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/response-all-by-status-and-worker
+            type_workers=TYPE_MOUNTING
+            status=[0,1]
+
+Шаг 2:
+    новые заказы на замер для замерщика по статусу post(status_request)
+            http://np.im56.ru/rest/get-request-by-status
+                status_request=STATUS_METERING_BEFORE
+
+    если нужно проверять был ли отклик, вывод отклика post(id_request,type_workers) вернет $response если нашел
+            http://np.im56.ru/rest/chek-response
+                type_workers=TYPE_METERING
+
+Шаг 4:
+    мои заказы на замер для замерщика по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-worker-and-status-metering
+            status_request=STATUS_METERING_BEFORE, STATUS_METERING_RUN, STATUS_METERING_AFTER
+
+Шаг 5:
+    данные по заказу: http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+            id_request
+
+    все отклики для замера, post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/response-all-by-status-and-worker
+            type_workers=TYPE_METERING
+            status=null,0,1
+            время = date-create - данные по заказу.date_create
+
+    вывод отклика post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/chek-response
+            type_workers=TYPE_METERING
+            время = date-create - данные по заказу.date_create
+Шаг 6:
+    данные по заказу:
+        http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+            get(id_request)
+            дата создания data_create
+
+    новые заказы на монтаж по статусу post(status_request)
+            http://np.im56.ru/rest/get-request-by-status
+                status_request=STATUS_METERING_AFTER
+
+    если нужно проверять был ли отклик, вывод отклика post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/chek-response
+            type_workers=TYPE_MOUNTING
+
+Шаг 7:
+    данные по заказу:
+        http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+            get(id_request)
+            дата создания data_create
+
+    данные по замеру:
+        http://np.im56.ru/rest/get-data-metering-by-id
+            id_request
+            id_workers =  данные по заказу . id_metering
+    схемы в:
+        http://np.im56.ru/rest/get-shema-request
+            id_request=id_request
+            изображения в http://np.im56.ru/web/uploads/images/metering/id_request/
+
+    все отклики для монтажа, post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/response-all-by-status-and-worker
+            type_workers=TYPE_MOUNTING
+            status=null,0,1
+
+    создание отклика
+        http://np.im56.ru/rest/create-response
+            id_request
+            type_workers = TYPE_MOUNTING
+            date_workers = null
+            price = цена
+
+            ?коммисия
+
+Шаг 8:
+    мои заказы на монтаж по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-worker-and-status-mounting
+            status_request=[STATUS_METERING_AFTER,
+                            STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER,
+                            STATUS_COMPANY_BEFORE, STATUS_COMPANY_RUN, STATUS_COMPANY_AFTER,
+                            STATUS_MOUNTING_BEFORE, STATUS_MOUNTING_RUN, STATUS_MOUNTING_AFTER]
+
+Шаг 9:
+    данные по заказу:
+        http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+            get(id_request)
+            дата создания data_create
+
+    данные по замеру:
+        http://np.im56.ru/rest/get-data-metering-by-id
+            id_request
+            id_workers =  данные по заказу . id_metering
+    схемы в:
+        http://np.im56.ru/rest/get-shema-request
+            id_request=id_request
+            изображения в http://np.im56.ru/web/uploads/images/metering/id_request/
+
+    все отклики для монтажа, post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/response-all-by-status-and-worker
+            type_workers=TYPE_MOUNTING
+            status=null,0,1
+
+    данные об отклике:
+        http://np.im56.ru/rest/chek-response
+            id_request
+            type_workers=TYPE_MOUNTING
+
+Шаг 10:
+    Заказы под ключ завершенные
+        http://np.im56.ru/rest/get-request-by-status-type
+            status_request=[STATUS_METERING_AFTER,
+                            STATUS_DELIVERY_BEFORE, STATUS_DELIVERY_RUN, STATUS_DELIVERY_AFTER,
+                            STATUS_COMPANY_BEFORE, STATUS_COMPANY_RUN, STATUS_COMPANY_AFTER,
+                            STATUS_MOUNTING_BEFORE, STATUS_MOUNTING_RUN, STATUS_MOUNTING_AFTER]
+            type = TYPE_TURN_KEY
+
+Шаг 11:
+    данные по заказу:
+        http://np.im56.ru/rest/get-request-by-id?id_request=id_request
+            get(id_request)
+            дата создания data_create
+            стоимость заказа: price_request
+            задолженность: price_request - 	deposit_cash -	deposit_transfer
+            ? Ваша задолженность высчитать после перечислений
+            ? Принято наличными от клиента:
+
+
+    данные по замеру:
+        http://np.im56.ru/rest/get-data-metering-by-id
+            id_request
+            id_workers =  данные по заказу . id_metering
+    схемы в:
+        http://np.im56.ru/rest/get-shema-request
+            id_request=id_request
+            изображения в http://np.im56.ru/web/uploads/images/metering/id_request/
+
+    все отклики для монтажа, post(id_request,type_workers) вернет $response если нашел
+        http://np.im56.ru/rest/response-all-by-status-and-worker
+            type_workers=TYPE_MOUNTING
+            status=null,0,1
+
+    данные об отклике:
+        http://np.im56.ru/rest/chek-response
+            id_request
+            type_workers=TYPE_MOUNTING
+
+    данные о клиенте:
+        http://np.im56.ru/rest/get-user-id
+    	    id_client из данные по заказу
+
+    изменение отклика
+        http://np.im56.ru/rest/update-response
+            id_request
+            type_workers = TYPE_MOUNTING
+            date_workers
+            price
+
+Шаг 13:
+    назначиь дату монтажа:
+            http://np.im56.ru/rest/update-response
+                id_request
+                type_workers = TYPE_MOUNTING
+                date_workers
+                price
+
+    подвердить выполнение: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_MOUNTING_RUN
+        status_new = STATUS_MOUNTING_AFTER
+
+    отменить назначение монтажника (при условии статуса заказа от STATUS_METERING_AFTER до STATUS_MOUNTING_BEFORE)
+        http://np.im56.ru/rest/set-insert-mounting
+            id_request
+            price = не изменяется оставляем данные по заказу . price_mounting
+            date_mounting = null
+            id_worker = null
+
+    прием наличных: http://np.im56.ru/rest/create-verify
+        id_request
+        id_user_to = id_client
+        id_from_user = http://np.im56.ru/rest/get-user-id
+        text = 'Прием наличных от клиента: '
+Шаг 15:
+        ? добавить транзакции
+
+Шаг 16:
+    мои заказы на замер для замерщика по статусу post(status_request)
+        http://np.im56.ru/rest/get-request-by-worker-and-status-metering
+            status_request=STATUS_METERING_BEFORE, STATUS_METERING_RUN, STATUS_METERING_AFTER
+
+    получить процент выолнения по ИД: http://np.im56.ru/rest/get-request-status-percent
+        id_request
+
+Шаг 17:
+    данные по замеру:
+        http://np.im56.ru/rest/get-data-metering-by-id
+            id_request
+            id_workers =  данные по заказу . id_metering
+
+    схемы в:
+        http://np.im56.ru/rest/get-shema-request
+            id_request=id_request
+            изображения в http://np.im56.ru/web/uploads/images/metering/id_request/
+
+    добавить данные по замеру:
+        http://np.im56.ru/rest/create-data-metering
+            id_request
+            id_workers =  данные по заказу . id_metering
+            'count_ceiling' => 'Кол-во потолков',
+            'area' => 'Общая площадь(м2)',
+            'perimeter' => 'Периметр(м)',
+            'spot' => 'Светильников',
+            'luster' => 'Люстр',
+            'curtain' => 'Гардин',
+            'cut_pipe' => 'Обвод труб'
+
+    изменить данные по замеру:
+        http://np.im56.ru/rest/create-data-metering
+            id_request
+            id_workers =  данные по заказу . id_metering
+            'count_ceiling' => 'Кол-во потолков',
+            'area' => 'Общая площадь(м2)',
+            'perimeter' => 'Периметр(м)',
+            'spot' => 'Светильников',
+            'luster' => 'Люстр',
+            'curtain' => 'Гардин',
+            'cut_pipe' => 'Обвод труб'
+
+    и установить статус: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_METERING_RUN
+        status_new = STATUS_METERING_AFTER
+
+
+Шаг 18:
+    добавить данные по замеру:
+        http://np.im56.ru/rest/create-data-metering
+            id_request
+            id_workers =  данные по заказу . id_metering
+            'count_ceiling' => 'Кол-во потолков',
+            'area' => 'Общая площадь(м2)',
+            'perimeter' => 'Периметр(м)',
+            'spot' => 'Светильников',
+            'luster' => 'Люстр',
+            'curtain' => 'Гардин',
+            'cut_pipe' => 'Обвод труб'
+
+    изменить данные по замеру:
+        http://np.im56.ru/rest/create-data-metering
+            id_request
+            id_workers =  данные по заказу . id_metering
+            'count_ceiling' => 'Кол-во потолков',
+            'area' => 'Общая площадь(м2)',
+            'perimeter' => 'Периметр(м)',
+            'spot' => 'Светильников',
+            'luster' => 'Люстр',
+            'curtain' => 'Гардин',
+            'cut_pipe' => 'Обвод труб'
+
+    и установить статус: http://np.im56.ru/rest/set-status
+        id_request
+        status_old = STATUS_METERING_RUN
+        status_new = STATUS_METERING_AFTER
+
+    отменить назначение замерщика (при условии статуса заказа от STATUS_METERING_AFTER до STATUS_MOUNTING_BEFORE)
+        http://np.im56.ru/rest/set-insert-metering
+            id_request
+            date_metering = null
+            id_worker = null
+
+Шаг 20:
+    получить все данные по пользователю: http://np.im56.ru/rest/get-user-by-id?id=id
+        текущий пользователь id = http://np.im56.ru/rest/get-user-id
+
+    изменить все данные по пользователю http://np.im56.ru/rest/set-user
+        post(id,email,lastname,firstname,birthday,tel,password,sys_notice, news_notice)
+
+Шаг 21:
+    получить все реквезиты по пользователю: http://np.im56.ru/rest/get-requisites-by-user-id
+        текущий пользователь id = http://np.im56.ru/rest/get-user-id
+
+    изменить реквезиты пользователя http://np.im56.ru/rest/set-requisites
+        post(company,inn,kpp,bank_name,bank_bik,account_calc,account_cor,address_company,director)
+
+Шаг 22:
+    получить все уведомления для пользователю:
+        http://np.im56.ru/rest/get-message-for-user
+
+    получить все уведомления для пользователю:
+            http://np.im56.ru/rest/create-message
+                text
+                id_to_user = кому
+
+    поставить уведомлению статус прочитано:
+            http://np.im56.ru/rest/set-message-read
+                id_message
+
+Шаг 23:
+    C балансом
+
+Шаг 24:
+    История баланса
+
+Шаг 25:
+    задачи
+
+    //данные по замеру post($id_request,  $id_workers,$count_ceiling,$area,$perimeter,$spot,$luster,$curtain,$cut_pipe)
+    public function actionCreateDataMetering()
+
+
+    //установить монтажника для заказа по ид, post(id_request,price,date_mounting,id_worker) вернет true если записал
+    //public function actionSetInsertMounting()
+

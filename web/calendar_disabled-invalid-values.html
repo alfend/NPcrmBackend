@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    
+    <script>
+        // Ignore this in your implementation
+        window.isMbscDemo = true;
+    </script>
+
+    <title>Setting invalids</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+
+    <!-- Mobiscroll JS and CSS Includes -->
+    <link rel="stylesheet" href="css/mobiscroll.jquery.min.css">
+    <script src="js/mobiscroll.jquery.min.js"></script>
+
+    <style type="text/css">
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    </style>
+
+</head>
+<body>
+
+<div mbsc-page class="demo-disabled-invalid-values">
+    <div mbsc-form>
+        <div class="mbsc-align-center">
+            <div class="mbsc-note mbsc-note-primary">Invalidating dates can be done a couple different ways. See options below.</div>
+        </div>
+        <div class="mbsc-form-group">
+            <div class="mbsc-form-group-title">Invalidating exact dates</div>
+            <div id="demo"></div>
+        </div>
+        <div class="mbsc-form-group">
+            <div class="mbsc-form-group-title">Invalidating recurring dates</div>
+            <div id="rec"></div>
+        </div>
+        <div class="mbsc-form-group">
+            <div class="mbsc-form-group-title">Invalidating weekdays</div>
+            <div id="week"></div>
+        </div>
+        <div class="mbsc-form-group">
+            <div class="mbsc-form-group-title">Invalidating date ranges</div>
+            <div id="range"></div>
+        </div>
+        <div class="mbsc-form-group">
+            <div class="mbsc-form-group-title">Overriding inside invalid ranges</div>
+            <div id="val"></div>
+        </div>
+        <div class="mbsc-align-center">
+            <div class="mbsc-note mbsc-note-primary">Besides date objects you can use date strings and moment.js for invalids.</div>
+        </div>
+        <div class="mbsc-form-group">
+            <div class="mbsc-form-group-title">String</div>
+            <div id="dateStr"></div>
+        </div>
+        <div class="mbsc-form-group">
+            <div class="mbsc-form-group-title">Moment JS</div>
+            <div id="moment"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    mobiscroll.settings = {
+        lang: 'en',                                // Specify language like: lang: 'pl' or omit setting to use default
+        theme: 'ios',                              // Specify theme like: theme: 'ios' or omit setting to use default
+        display: 'inline'                          // Specify display mode like: display: 'bottom' or omit setting to use default
+    };
+    
+    $(function () {
+    
+        // Mobiscroll Calendar initialization
+        $('#demo').mobiscroll().calendar({
+            invalid: [                             // More info about invalid: https://docs.mobiscroll.com/4-8-5/calendar#opt-invalid
+                new Date(2018, 1, 5),
+                new Date(2018, 1, 13),
+                new Date(2018, 1, 18),
+                new Date(2018, 1, 23)
+            ],
+            defaultValue: new Date(2018, 1, 14),   // More info about defaultValue: https://docs.mobiscroll.com/4-8-5/calendar#opt-defaultValue
+            weeks: 1                               // More info about weeks: https://docs.mobiscroll.com/4-8-5/calendar#opt-weeks
+        });
+    
+        // Mobiscroll Calendar initialization
+        $('#rec').mobiscroll().calendar({
+            invalid: [                             // More info about invalid: https://docs.mobiscroll.com/4-8-5/calendar#opt-invalid
+                '12/24',
+                '12/25',
+                '12/26',
+                '12/31'
+            ],
+            defaultValue: new Date(2018, 11, 10),  // More info about defaultValue: https://docs.mobiscroll.com/4-8-5/calendar#opt-defaultValue
+            weeks: 1                               // More info about weeks: https://docs.mobiscroll.com/4-8-5/calendar#opt-weeks
+        });
+    
+        // Mobiscroll Calendar initialization
+        $('#week').mobiscroll().calendar({
+            invalid: ['w0', 'w6'],                 // More info about invalid: https://docs.mobiscroll.com/4-8-5/calendar#opt-invalid
+            weeks: 1                               // More info about weeks: https://docs.mobiscroll.com/4-8-5/calendar#opt-weeks
+        });
+    
+        // Mobiscroll Calendar initialization
+        $('#range').mobiscroll().calendar({
+            invalid: [                             // More info about invalid: https://docs.mobiscroll.com/4-8-5/calendar#opt-invalid
+                { start: new Date(2018, 11, 21), end: new Date(2018, 11, 31) }
+            ],
+            defaultValue: new Date(2018, 11, 10),  // More info about defaultValue: https://docs.mobiscroll.com/4-8-5/calendar#opt-defaultValue
+            weeks: 1                               // More info about weeks: https://docs.mobiscroll.com/4-8-5/calendar#opt-weeks
+        });
+    
+        // Mobiscroll Calendar initialization
+        $('#val').mobiscroll().calendar({
+            invalid: [                             // More info about invalid: https://docs.mobiscroll.com/4-8-5/calendar#opt-invalid
+                { start: new Date(2018, 11, 21), end: new Date(2018, 11, 31) }
+            ],
+            valid: [                               // More info about valid: https://docs.mobiscroll.com/4-8-5/calendar#opt-valid
+                { start: new Date(2018, 11, 26), end: new Date(2018, 11, 30) }
+            ],
+            defaultValue: new Date(2018, 11, 27),  // More info about defaultValue: https://docs.mobiscroll.com/4-8-5/calendar#opt-defaultValue
+            weeks: 1                               // More info about weeks: https://docs.mobiscroll.com/4-8-5/calendar#opt-weeks
+        });
+    
+        // Mobiscroll Calendar initialization
+        $('#dateStr').mobiscroll().calendar({
+            defaultValue: '2018-07-25T00:00',      // More info about defaultValue: https://docs.mobiscroll.com/4-8-5/calendar#opt-defaultValue
+            invalid: [                             // More info about invalid: https://docs.mobiscroll.com/4-8-5/calendar#opt-invalid
+                '2018-07-10T00:00',
+                '2018-07-16T00:00',
+                '07/19/2018',
+                '07/27/2018'
+            ],
+            weeks: 1                               // More info about weeks: https://docs.mobiscroll.com/4-8-5/calendar#opt-weeks
+        });
+    
+        // make sure that moment js is loaded
+        // Mobiscroll Calendar initialization
+        $('#moment').mobiscroll().calendar({
+            defaultValue: moment([2018, 8, 17]),   // More info about defaultValue: https://docs.mobiscroll.com/4-8-5/calendar#opt-defaultValue
+            invalid: [                             // More info about invalid: https://docs.mobiscroll.com/4-8-5/calendar#opt-invalid
+                moment([2018, 8, 11]),
+                moment([2018, 8, 20])
+            ],
+            weeks: 1                               // More info about weeks: https://docs.mobiscroll.com/4-8-5/calendar#opt-weeks
+        });
+    
+    });
+</script>
+
+</body>
+</html>
